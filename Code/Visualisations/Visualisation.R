@@ -61,5 +61,12 @@ pl <- df %>%
   ggplot(aes(x = measurement, y = values, fill = Species)) + geom_boxplot(alpha = 0.5)
 pl + scale_fill_manual(values = c('forestgreen', 'salmon', 'turquoise')) + theme_clean()
 
+# Measurements Distributions in Each Class
 
-
+pl <- df %>%
+  group_by(Species) %>%
+  mutate(mean.PL = mean(Petal.Length), mean.PW = mean(Petal.Width), mean.SL = mean(Sepal.Length), mean.SW = mean(Sepal.Width)) %>%
+  ungroup() %>%
+  pivot_longer(cols = c('Sepal.Length', 'Sepal.Width', 'Petal.Length', 'Petal.Width'), names_to = 'measurement', values_to = 'values') %>%
+  ggplot(aes(x = values, fill = measurement)) + geom_density(alpha = 0.5) + facet_grid(Species~., scales = 'free') + geom_vline(aes(xintercept = mean.PL), lty = 2) + geom_vline(aes(xintercept = mean.PW), lty = 2) + geom_vline(aes(xintercept = mean.SL), lty = 2) + geom_vline(aes(xintercept = mean.SW), lty = 2)
+pl + labs(x = 'Measurements (in cm)', title = 'Distribution of Predictors in Each Class') + theme_clean()
