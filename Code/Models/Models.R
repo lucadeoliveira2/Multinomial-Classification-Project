@@ -32,6 +32,7 @@ p_values <- (1-pnorm(abs(z_stat), 0, 1))*2
 
 logmodel_pred <- predict(logmodel, test, type = 'raw')
 confusionMatrix(logmodel_pred, test$Species)
+logmodel_accuracy <- mean(logmodel_pred == test$Species)
 
 logmodel_prob <- predict(logmodel, test, type = 'prob')
 rocs <- multiclass.roc(test$Species, logmodel_prob, percent = T)
@@ -55,6 +56,7 @@ ldamod <- lda(Species ~ ., data = training)
 ldamod_pred <- predict(ldamod, test)$class
 ldamod_plotted <- predict(ldamod,test)$x
 confusionMatrix(ldamod_pred, test$Species)
+ldamod_accuracy <- mean(ldamod_pred == test$Species)
 ldahist(ldamod_plotted[,1], g = test$Species)
 ldahist(ldamod_plotted[,2], g = test$Species)
 
@@ -77,6 +79,7 @@ ggord(linear, training$Species, ylim = c(-10, 10)) # Still can't install
 qdamod <- qda(Species ~., data = training)
 qdamod_pred <- predict(qdamod, test)$class
 confusionMatrix(qdamod_pred, test$Species)
+qdamod_accuracy <- mean(qdamod_pred == test$Species)
 
 # Comments
 # - This model got 4 observations wrong, 3 more than the LDA model and 1 more than Logistic Model
@@ -101,11 +104,16 @@ ggplot(errors, aes(x = k, y = error)) + geom_point(aes(size = error), col = 'lig
 
 test_pred <- knn(training_scaled, test_scaled, training_results, k = 8)
 confusionMatrix(test_pred, test_results)
+knn_accuracy <- mean(test_pred == test_results)
 
 # Comments
 # - Performs better than QDA, same as LDA and worse than Logistic Model (3 errors)
 # - This poorer performance is likely due to low number of observations
 # - Optimal model is at K = 8, which is fairly flexible
+
+model_accuracies <- data.frame(model = c('Logistic Regression', 'LDA', 'QDA', 'KNN (K=8)'), accuracy = c(logmodel_accuracy, ldamod_accuracy, qdamod_accuracy, knn_accuracy))
+ggplot(model_accuracies, aes(x = factor(model), y = accuracy, fill = factor(model))) + geom_col(alpha = 0.5, col = 'black') + scale_fill_manual(values = c('forestgreen', 'salmon', 'turquoise', 'purple')) + theme_clean() + labs(x = 'Model', y = 'Accuracy', title = 'Model Performance') + theme(plot.title = element_text(hjust  = 0.5)) + annotate(geom = 'text', label = paste0(round(model_accuracies$accuracy*100,3),'%'), x = model_accuracies$model, y = rep(0.6, 4))
+
 
 # Conclusions
 # - LDA Model performs the best with an accuracy of 99.0% (1 error). Predictors are normally distributed, relationships are not crazy complicated and covariance matrix are not too different from each other
