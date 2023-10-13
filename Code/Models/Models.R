@@ -112,8 +112,7 @@ knn_accuracy <- mean(test_pred == test_results)
 # - Optimal model is at K = 8, which is fairly flexible
 
 model_accuracies <- data.frame(model = c('Logistic Regression', 'LDA', 'QDA', 'KNN (K=8)'), accuracy = c(logmodel_accuracy, ldamod_accuracy, qdamod_accuracy, knn_accuracy))
-ggplot(model_accuracies, aes(x = factor(model), y = accuracy, fill = factor(model))) + geom_col(alpha = 0.5, col = 'black') + scale_fill_manual(values = c('forestgreen', 'salmon', 'turquoise', 'purple')) + theme_clean() + labs(x = 'Model', y = 'Accuracy', title = 'Model Performance') + theme(plot.title = element_text(hjust  = 0.5)) + annotate(geom = 'text', label = paste0(round(model_accuracies$accuracy*100,3),'%'), x = model_accuracies$model, y = rep(0.6, 4))
-
+ggplot(model_accuracies, aes(x = factor(model), y = accuracy, fill = factor(model))) + geom_col(alpha = 0.5, col = 'black') + scale_fill_manual(values = c('forestgreen', 'salmon', 'turquoise', 'purple'), guide = guide_legend('Model')) + theme_clean() + labs(x = 'Model', y = 'Accuracy', title = 'Model Performance') + theme(plot.title = element_text(hjust  = 0.5)) + annotate(geom = 'text', label = paste0(round(model_accuracies$accuracy*100,3),'%'), x = model_accuracies$model, y = rep(0.6, 4))
 
 # Conclusions
 # - LDA Model performs the best with an accuracy of 99.0% (1 error). Predictors are normally distributed, relationships are not crazy complicated and covariance matrix are not too different from each other
